@@ -7,6 +7,7 @@
 class GameEngine {
 public:
 	GameEngine();
+	GameEngine(int screenHeight_, int screenWidth_);
 	~GameEngine();
 	int constructConsole(int width, int height);
 	int constructConsole();
