@@ -1,14 +1,13 @@
 #include "Game.h"
 
-Game::Game() : 
-	holdKeyW{ false }, 
-	holdKeyS{ false }, 
-	holdKeyA{ false }, 
-	holdKeyD{ false }, 
+Game::Game() :
+	holdKeyW{ false },
+	holdKeyS{ false },
+	holdKeyA{ false },
+	holdKeyD{ false },
 	isAlive{ true },
-	sessionLifeCnt{ 1 },
 	currentDirection{ Direction::TOP },
-	scoreBoard(2, 2)
+	scoreBoard()
 {
 }
 
@@ -83,6 +82,26 @@ void Game::checkCollisions() {
 	}
 }
 
+void Game::showScoreBoard() {
+	//just give up and concatonate score to the string and print that...
+	std::string s;
+	int h = 0;
+	for(int c = 0; c < scoreBoard.getPlayerCnt(); c++) {
+		s = scoreBoard.getName(c);
+		for(int i = 0; i < s.size(); i++) {
+			screenBuf[10 + h][12 + i].Char.UnicodeChar = s[i];
+			screenBuf[10 + h][12 + i].Attributes = 0x000F;
+		}
+		h++;
+	}
+	if(scoreBoard.getPlayerCnt() < scoreBoard.getMaxPlayerCnt()) {
+		scoreBoard.addNewPlayerToTable();
+	} else {
+		scoreBoard.popLastPlayer();
+		scoreBoard.addNewPlayerToTable();
+	}
+}
+
 void Game::display() {
 	//Clear screen(should clear only needed parts, but for now, it works)
 	for(int h = 0; h < 60; h++) {
@@ -112,24 +131,7 @@ void Game::display() {
 			screenBuf[5][12 + i].Char.UnicodeChar = scoreBoard.getGameOverText()[i];
 			screenBuf[5][12 + i].Attributes = 0x000F;
 		}
-
-		//-------------------------------------------------------------------------
-
-		//Display score
-		std::string temp;
-		int x = 0;
-		for(int first = 0; first < scoreBoard.getRow(); first++) {
-			for(int c_ = 0; c_ < scoreBoard.getCol(); c_++) {
-				temp = scoreBoard.getName(first, c_);
-				for(int i = 0; i < temp.size(); i++) {
-					screenBuf[10 + x][12 + i].Char.UnicodeChar = temp[i];
-					screenBuf[10 + x][12 + i].Attributes = 0x000F;
-				}
-				x++;
-			}
-		}
-
-		//-------------------------------------------------------------------------
+		showScoreBoard();	
 	}
 	//Still bad CHANGE THIS
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -151,7 +153,6 @@ bool Game::update(float deltaTimeCnt) {
 }
 
 void Game::resetGame() {
-	sessionLifeCnt++;
 	snek.body = { {28, 30}, {29, 30}, {30, 30} };
 	apple.x = 20;
 	apple.y = 20;

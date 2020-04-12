@@ -7,16 +7,15 @@ GameEngine::GameEngine() :
 	rectWin{ 0, 0, 1, 1 }
 {
 	//Alloc memory
-	allocBuf(screenBuf, screenHeight, screenWidth);
+	allocBuf(this->screenBuf, this->screenHeight, this->screenWidth);
 	/*screenBuf = new CHAR_INFO[screenWidth * screenHeight];
 	memset(screenBuf, 0, sizeof(CHAR_INFO) * screenWidth * screenHeight);*/
 }
 
 GameEngine::~GameEngine() {
-	for(int i = 0; i < screenWidth; i++) {
-		delete[] screenBuf[i];
+	for(int i = 0; i < this->screenWidth; i++) {
+		delete[] this->screenBuf[i];
 	}
-	delete[] screenBuf;
 }
 
 //GameEngine::~GameEngine() {
@@ -30,7 +29,7 @@ void GameEngine::allocBuf(CHAR_INFO**& buf, short height, short width) {
 	//memory cleanup in destructor
 	buf = new CHAR_INFO * [height];
 	*buf = new CHAR_INFO[width * height];
-	for(int i = 1; i < screenWidth; i++) {
+	for(int i = 1; i < width; i++) {
 		buf[i] = buf[i - 1] + width;
 	}
 }

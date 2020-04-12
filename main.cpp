@@ -5,6 +5,10 @@ int main() {
 	Game game;
 	game.constructConsole(60, 60);
 	game.start();
-	ScoreBoard s(5, 5);
+	/*ScoreBoard s;
+	s.addNewPlayerToTable();
+	s.popLastPlayer();*/
+
+	return 0;
 }
 

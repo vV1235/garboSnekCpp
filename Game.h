@@ -14,6 +14,7 @@ private:
 	void logicManagment();
 	void display();
 	void resetGame();
+	void showScoreBoard();
 
 	Snek snek;
 	Apple apple;
@@ -32,5 +33,4 @@ private:
 	bool holdKeyS;
 	bool holdKeyA;
 	bool holdKeyD;
-	short sessionLifeCnt;
 };
