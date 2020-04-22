@@ -129,7 +129,8 @@ void GameEngine::start() {
 
 void GameEngine::gameThread() {
 	// Create user resources as part of this thread
-	std::chrono::system_clock::time_point tp1, tp2;
+	std::chrono::system_clock::time_point tp1;
+	std::chrono::system_clock::time_point tp2;
 	if(!setup()) {
 		active = false;
 	}

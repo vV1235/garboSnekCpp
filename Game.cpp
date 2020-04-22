@@ -12,6 +12,11 @@ Game::Game() :
 }
 
 bool Game::setup() {
+	Apple checkApple = apple;
+	if(checkApple.x != 20 && checkApple.y != 20) {
+		apple.x = 20;
+		apple.y = 20;
+	}
 	return true;
 }
 
@@ -58,8 +63,8 @@ void Game::logicManagment() {
 
 void Game::checkCollisions() {
 	//Check collisions with body
-	//should use auto but more
-	for(std::list<Snek::snekSegment>::iterator i = snek.body.begin(); i != snek.body.end(); ++i) {
+	//std::list<Snek::snekSegment>::iterator
+	for(auto i = snek.body.begin(); i != snek.body.end(); ++i) {
 		//Ignore the head, check if body segment i has the same coords as the head
 		if(i != snek.body.begin() && i->x == snek.body.front().x && i->y == snek.body.front().y) {
 			isAlive = false;
@@ -116,7 +121,7 @@ void Game::display() {
 	}*/
 	
 	//Draw body & head
-	for(auto s : snek.body) {
+	for(auto &s : snek.body) {
 		draw(s.x, s.y, L'@', 0x0002);
 	}
 	draw(snek.body.front().x, snek.body.front().y, L'@', 0x0006);

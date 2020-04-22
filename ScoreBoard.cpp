@@ -18,7 +18,6 @@ ScoreBoard::~ScoreBoard() {
 	clearTable();
 }
 
-
 int ScoreBoard::getPlayerCnt() const {
 	return playerCnt;
 }
