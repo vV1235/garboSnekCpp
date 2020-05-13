@@ -1,22 +1,28 @@
 #include "GameEngine.h"
 
-GameEngine::GameEngine() : 
+v1::GameEngine::GameEngine() : 
 	screenWidth{ 60 }, 
 	screenHeight{ 60 },
 	hConsole{ GetStdHandle(STD_OUTPUT_HANDLE) },
 	rectWin{ 0, 0, 1, 1 }
 {
 	//Alloc memory
-	allocBuf(screenBuf, screenHeight, screenWidth);
+	allocBuf(this->screenBuf, this->screenHeight, this->screenWidth);
 	/*screenBuf = new CHAR_INFO[screenWidth * screenHeight];
 	memset(screenBuf, 0, sizeof(CHAR_INFO) * screenWidth * screenHeight);*/
 }
 
-GameEngine::~GameEngine() {
-	for(int i = 0; i < screenWidth; i++) {
-		delete[] screenBuf[i];
+v1::GameEngine::GameEngine(int screenHeight_, int screenWidth_) :
+	screenHeight{screenHeight_}, 
+	screenWidth{ screenWidth_ }
+{
+	allocBuf(this->screenBuf, screenHeight_, screenWidth_);
+}
+
+v1::GameEngine::~GameEngine() {
+	for(int i = 0; i < this->screenWidth; i++) {
+		delete[] this->screenBuf[i];
 	}
-	delete[] screenBuf;
 }
 
 //GameEngine::~GameEngine() {
@@ -24,18 +30,18 @@ GameEngine::~GameEngine() {
 //}
 
 //Dla wersji ze screenBuf**
-void GameEngine::allocBuf(CHAR_INFO**& buf, short height, short width) {
+void v1::GameEngine::allocBuf(CHAR_INFO**& buf, short height, short width) {
 	//dev.to/drakargx/c-contiguous-allocation-of-2-d-arrays-446m
 	//normal allocation doesn't work properly because the memory allocated by new is not contiguous
 	//memory cleanup in destructor
 	buf = new CHAR_INFO * [height];
 	*buf = new CHAR_INFO[width * height];
-	for(int i = 1; i < screenWidth; i++) {
+	for(int i = 1; i < width; i++) {
 		buf[i] = buf[i - 1] + width;
 	}
 }
 
-int GameEngine::constructConsole(int width, int height) {
+int v1::GameEngine::constructConsole(int width, int height) {
 	screenWidth = width;
 	screenHeight = height;
 
@@ -66,7 +72,7 @@ int GameEngine::constructConsole(int width, int height) {
 	return 1;
 }
 
-int GameEngine::constructConsole() {
+int v1::GameEngine::constructConsole() {
 	screenWidth = 60;
 	screenHeight = 60;
 
@@ -97,7 +103,7 @@ int GameEngine::constructConsole() {
 	return 1;
 }
 
-void GameEngine::draw(int x, int y, wchar_t c, short color) {
+void v1::GameEngine::draw(int x, int y, wchar_t c, short color) {
 	if(x >= 0 && x < screenWidth && y >= 0 && y < screenHeight) {
 		screenBuf[y][x].Char.UnicodeChar = c;
 		screenBuf[y][x].Attributes = color;
@@ -111,7 +117,7 @@ void GameEngine::draw(int x, int y, wchar_t c, short color) {
 //	}
 //}
 
-void GameEngine::start() {
+void v1::GameEngine::start() {
 	active = true;
 
 	// Star the thread
@@ -121,9 +127,10 @@ void GameEngine::start() {
 	t.join();
 }
 
-void GameEngine::gameThread() {
+void v1::GameEngine::gameThread() {
 	// Create user resources as part of this thread
-	std::chrono::system_clock::time_point tp1, tp2;
+	std::chrono::system_clock::time_point tp1;
+	std::chrono::system_clock::time_point tp2;
 	if(!setup()) {
 		active = false;
 	}

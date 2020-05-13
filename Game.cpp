@@ -1,18 +1,22 @@
 #include "Game.h"
 
-Game::Game() : 
-	holdKeyW{ false }, 
-	holdKeyS{ false }, 
-	holdKeyA{ false }, 
-	holdKeyD{ false }, 
+Game::Game() :
+	holdKeyW{ false },
+	holdKeyS{ false },
+	holdKeyA{ false },
+	holdKeyD{ false },
 	isAlive{ true },
-	sessionLifeCnt{ 1 },
 	currentDirection{ Direction::TOP },
-	scoreBoard(2, 2)
+	scoreBoard()
 {
 }
 
 bool Game::setup() {
+	Apple checkApple = apple;
+	if(checkApple.x != 20 && checkApple.y != 20) {
+		apple.x = 20;
+		apple.y = 20;
+	}
 	return true;
 }
 
@@ -59,8 +63,8 @@ void Game::logicManagment() {
 
 void Game::checkCollisions() {
 	//Check collisions with body
-	//should use auto but more
-	for(std::list<Snek::snekSegment>::iterator i = snek.body.begin(); i != snek.body.end(); ++i) {
+	//std::list<Snek::snekSegment>::iterator
+	for(auto i = snek.body.begin(); i != snek.body.end(); ++i) {
 		//Ignore the head, check if body segment i has the same coords as the head
 		if(i != snek.body.begin() && i->x == snek.body.front().x && i->y == snek.body.front().y) {
 			isAlive = false;
@@ -83,6 +87,26 @@ void Game::checkCollisions() {
 	}
 }
 
+void Game::showScoreBoard() {
+	//just give up and concatonate score to the string and print that...
+	std::string s;
+	int h = 0;
+	for(int c = 0; c < scoreBoard.getPlayerCnt(); c++) {
+		s = scoreBoard.getName(c);
+		for(int i = 0; i < s.size(); i++) {
+			screenBuf[10 + h][12 + i].Char.UnicodeChar = s[i];
+			screenBuf[10 + h][12 + i].Attributes = 0x000F;
+		}
+		h++;
+	}
+	if(scoreBoard.getPlayerCnt() < scoreBoard.getMaxPlayerCnt()) {
+		scoreBoard.addNewPlayerToTable();
+	} else {
+		scoreBoard.popLastPlayer();
+		scoreBoard.addNewPlayerToTable();
+	}
+}
+
 void Game::display() {
 	//Clear screen(should clear only needed parts, but for now, it works)
 	for(int h = 0; h < 60; h++) {
@@ -97,7 +121,7 @@ void Game::display() {
 	}*/
 	
 	//Draw body & head
-	for(auto s : snek.body) {
+	for(auto &s : snek.body) {
 		draw(s.x, s.y, L'@', 0x0002);
 	}
 	draw(snek.body.front().x, snek.body.front().y, L'@', 0x0006);
@@ -112,27 +136,10 @@ void Game::display() {
 			screenBuf[5][12 + i].Char.UnicodeChar = scoreBoard.getGameOverText()[i];
 			screenBuf[5][12 + i].Attributes = 0x000F;
 		}
-
-		//-------------------------------------------------------------------------
-
-		//Display score
-		std::string temp;
-		int x = 0;
-		for(int first = 0; first < scoreBoard.getRow(); first++) {
-			for(int c_ = 0; c_ < scoreBoard.getCol(); c_++) {
-				temp = scoreBoard.getName(first, c_);
-				for(int i = 0; i < temp.size(); i++) {
-					screenBuf[10 + x][12 + i].Char.UnicodeChar = temp[i];
-					screenBuf[10 + x][12 + i].Attributes = 0x000F;
-				}
-				x++;
-			}
-		}
-
-		//-------------------------------------------------------------------------
+		showScoreBoard();	
 	}
 	//Still bad CHANGE THIS
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	std::this_thread::sleep_for(std::chrono::milliseconds(200));
 }
 
 bool Game::update(float deltaTimeCnt) {
@@ -151,7 +158,6 @@ bool Game::update(float deltaTimeCnt) {
 }
 
 void Game::resetGame() {
-	sessionLifeCnt++;
 	snek.body = { {28, 30}, {29, 30}, {30, 30} };
 	apple.x = 20;
 	apple.y = 20;

@@ -4,7 +4,7 @@
 #include "Apple.h"
 #include "ScoreBoard.h"
 
-class Game : public GameEngine {
+class Game : public v1::GameEngine {
 public:
 	Game();
 	virtual bool setup();
@@ -14,6 +14,7 @@ private:
 	void logicManagment();
 	void display();
 	void resetGame();
+	void showScoreBoard();
 
 	Snek snek;
 	Apple apple;
@@ -32,5 +33,4 @@ private:
 	bool holdKeyS;
 	bool holdKeyA;
 	bool holdKeyD;
-	short sessionLifeCnt;
 };

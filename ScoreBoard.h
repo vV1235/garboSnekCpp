@@ -2,24 +2,33 @@
 #include <string>
 
 class ScoreBoard {
+	friend class Game;
 public:
-	ScoreBoard() = delete;
-	ScoreBoard(int r, int c);
+	//Default constructor simulates having 5 previous players since no general way of keeping score is implemented atm
+	ScoreBoard();
+	//This constructor ought to be used later on after implementing saving the scoreboard state to file
+	//ScoreBoard(int size_);
 	~ScoreBoard();
-	std::string getName(int r_, int c_) const;
-	//TODO score display on screen
-	//wchar_t getScore(int r_, int c_) const;
-	int getRow() const;
-	int getCol() const;
+	
+	std::string getName(int index_) const;
+	int getScore(int index_) const;
+	int getPlayerCnt() const;
+	int getMaxPlayerCnt() const;
 	std::string getGameOverText() const;
 private:
+	void addNewPlayerToTable();
+	void popLastPlayer();
 	struct Info {
 		std::string name;
-		short score;
+		int score;
 	};
-	int r;
-	int c;
 	Info** table;
-	void aloc(int r, int c);
+
 	const std::string gameOverText = "GAME OVER PRESS SPACE TO PLAY AGAIN";
+	int playerCnt;
+	const int maxPlayerCnt = 10;
+
+	void alocTable();
+	void simTablePlayers();
+	void clearTable();
 };

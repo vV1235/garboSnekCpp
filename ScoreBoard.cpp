@@ -1,47 +1,88 @@
 #include "ScoreBoard.h"
 
-ScoreBoard::ScoreBoard(int r_, int c_) : r{ r_ }, c{ c_ } {
-	//More explicit in terms of what it does
-	aloc(this->r, this->c);
-	//Example
-	table[0][0].name = "Jacek1";
-	table[0][0].score = 12;
-	table[0][1].name = "Jacek2";
-	table[0][1].score = 23;
-	table[1][0].name = "Jacek3";
-	table[1][0].score = 34;
-	table[1][1].name = "Jacek4";
-	table[1][1].score = 45;
+ScoreBoard::ScoreBoard() : 
+	playerCnt { 5 }
+{
+	alocTable();
+	simTablePlayers();
 }
+
+//ScoreBoard::ScoreBoard(int size_) : 
+//	size{ size_ } 
+//{
+//	//More explicit in terms of what it does
+//	alocTable();
+//}
 
 ScoreBoard::~ScoreBoard() {
-	//TODO table** cleanup
+	clearTable();
 }
 
-int ScoreBoard::getRow() const {
-	return r;
-}
-
-int ScoreBoard::getCol () const {
-	return r;
+int ScoreBoard::getPlayerCnt() const {
+	return playerCnt;
 }
 
 std::string ScoreBoard::getGameOverText() const {
 	return gameOverText;
 }
 
-std::string ScoreBoard::getName(int r_, int c_) const {
-	return table[r_][c_].name;
+int ScoreBoard::getMaxPlayerCnt() const {
+	return maxPlayerCnt;
 }
 
-//TODO score display on the screen
-//wchar_t ScoreBoard::getScore(int r_, int c_) const {
-//	return static_cast<char>(table[r_][c_].score);
-//}
+std::string ScoreBoard::getName(int index_) const {
+	return this->table[index_]->name;
+}
 
-void ScoreBoard::aloc(int r, int c) {
-	this->table = new Info * [r];
-	for(int i = 0; i < r; i++) {
-		this->table[i] = new Info[c];
+int ScoreBoard::getScore(int index_) const {
+	return this->table[index_]->score;
+}
+
+void ScoreBoard::alocTable() {
+	table = new Info * [playerCnt];
+	for(int i = 0; i < playerCnt; i++) {
+		table[i] = new Info;
+	}
+}
+
+void ScoreBoard::simTablePlayers() {
+	for(int i = 0; i < playerCnt; i++) {
+		table[i]->name = "player" + std::to_string(i + 1);
+		table[i]->score = i + 6;
+	}
+}
+
+void ScoreBoard::addNewPlayerToTable() {
+	Info** tmpTable = new Info*[playerCnt + 1];
+	for(int i = 0; i < playerCnt + 1; i++) {
+		tmpTable[i] = new Info;
+	}
+	for(int i = 0; i < playerCnt; i++) {
+		tmpTable[i + 1]->name = table[i]->name;
+		tmpTable[i + 1]->score = table[i]->score;
+	}
+	tmpTable[0]->name = "Nowy";
+	tmpTable[0]->score = 9;
+	playerCnt++;
+	table = tmpTable;
+}
+
+void ScoreBoard::popLastPlayer() {
+	Info** tmpTable = new Info * [playerCnt - 1];
+	for(int i = 0; i < playerCnt - 1; i++) {
+		tmpTable[i] = new Info;
+	}
+	for(int i = playerCnt - 1; i > 0; i--) {
+		tmpTable[i - 1]->name = table[i - 1]->name;
+		tmpTable[i - 1]->score = table[i - 1]->score;
+	}
+	delete[] table;
+	playerCnt--;
+	table = tmpTable;
+}
+
+void ScoreBoard::clearTable() {
+	for(int i = 0; i < playerCnt; i++) {
+		delete[] table[i];
 	}
 }
